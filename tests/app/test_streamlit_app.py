@@ -227,3 +227,33 @@ def test_case_detail_shows_every_card_and_approve_produces_quotation(app):
 
     _screen(app, "completed")
     assert _cases(app) == {"Q-standard-quote"}
+
+
+def test_check_inbox_turns_new_emails_into_cases_once(app):
+    app.run()
+    assert len(app.dataframe[0].value) == 8
+
+    next(b for b in app.sidebar.button if b.label == "Check inbox").click().run()
+    assert not app.exception, [e.value for e in app.exception]
+    assert len(app.dataframe[0].value) == 11  # the 3 demo emails, assigned to the default reviewer
+    assert "3 new case(s)" in app.toast[0].value
+
+    next(b for b in app.sidebar.button if b.label == "Check inbox").click().run()
+    assert len(app.dataframe[0].value) == 11
+    assert "No new RFQs" in app.toast[0].value
+
+
+def test_acting_on_a_case_keeps_it_open_and_in_place(app):
+    """The table selects by row position, so a queue that re-sorted on update
+    would hand the detail panel a different case after Approve."""
+    app.run()
+    order_before = list(app.dataframe[0].value["Case"])
+    case_id = order_before[3]
+    app.session_state["selected_case"] = case_id
+    app.run()
+
+    next(b for b in app.button if b.label == "Approve").click().run()
+    assert not app.exception, [e.value for e in app.exception]
+
+    assert list(app.dataframe[0].value["Case"]) == order_before
+    assert app.session_state["selected_case"] == case_id
