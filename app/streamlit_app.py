@@ -26,7 +26,9 @@ def _load_secrets_into_env() -> None:
 
 _load_secrets_into_env()
 
-from resources import MANAGER, reviewers, store  # noqa: E402
+from resources import MANAGER, check_inbox, reviewers, store  # noqa: E402
+
+from ui import STATUS_LABEL  # noqa: E402
 
 st.set_page_config(page_title="Quote Review Portal", page_icon=":material/request_quote:", layout="wide")
 
@@ -69,6 +71,15 @@ with st.sidebar:
     options = [*reviewers(), MANAGER]
     chosen = st.segmented_control("View as", options, default=options[0], key="view_as")
     st.session_state["viewer"] = chosen or options[0]
+    if st.button("Check inbox", icon=":material/mail:", width="stretch"):
+        with st.spinner("Reading the RFQ mailbox..."):
+            new_cases = check_inbox()
+        if new_cases:
+            listed = ", ".join(f"{case.case_id} ({STATUS_LABEL[case.status]})" for case in new_cases)
+            st.toast(f"{len(new_cases)} new case(s): {listed}", icon=":material/mark_email_unread:")
+        else:
+            st.toast("No new RFQs in the mailbox.", icon=":material/inbox:")
+    st.caption("Demo mailbox - intake is mocked until the email integration lands.")
     st.caption(f"{store().count()} cases in store")
 
 navigation.run()

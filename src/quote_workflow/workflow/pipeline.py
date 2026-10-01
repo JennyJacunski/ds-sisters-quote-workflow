@@ -1,6 +1,6 @@
 """The composer: the one place the stage order is written down.
 
-    create_case_from_request / create_case_from_source
+    create_case_from_request / create_case_from_source (ingest_sources: one per new RFQ)
         → submit_request            (complete? else NEEDS_INFO)
             → price_and_summarize   (pricing, then reviewer summary, then READY_FOR_REVIEW)
 
@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import sqlite3
 import uuid
+from collections.abc import Callable
 from datetime import UTC, date, datetime
 from typing import Any
 
@@ -111,6 +112,54 @@ def create_case_from_request(
     """Create a case and run it through submit_request in one go (seeding, tests, evaluation)."""
     case = create_case(store, source=source, case_id=case_id, assigned_to=assigned_to)
     return submit_request(store, conn, case.case_id, request, **run_options)
+
+
+RunIntake = Callable[[RfqSource, sqlite3.Connection], QuoteRequest]
+
+
+def create_case_from_source(
+    store: CaseStore, conn: sqlite3.Connection, source: RfqSource, run_intake: RunIntake, **run_options: Any
+) -> QuoteCase:
+    """A raw RFQ in: create the case, let intake read it, then submit_request.
+
+    ``run_intake`` is intake's ``(source, conn) -> QuoteRequest``, passed in so
+    the mock and the real intake are interchangeable. The case exists before
+    intake runs, so an intake failure is a FAILED case with the error in its
+    timeline - never a crash and never an email that silently disappears.
+    """
+    case = create_case(store, source=source)
+    try:
+        request = run_intake(source, conn)
+        if not isinstance(request, QuoteRequest):
+            raise TypeError(f"intake returned {type(request).__name__}, expected QuoteRequest")
+    except Exception as exc:
+        return _transition(
+            store, case, CaseStatus.FAILED, "intake", f"{exc.__class__.__name__}: {exc}", level="error"
+        )
+    return submit_request(store, conn, case.case_id, request, **run_options)
+
+
+def ingest_sources(
+    store: CaseStore,
+    conn: sqlite3.Connection,
+    sources: list[RfqSource],
+    run_intake: RunIntake,
+    **run_options: Any,
+) -> list[QuoteCase]:
+    """Turn every RFQ not seen before into a case; returns the new cases.
+
+    "Seen" means a stored case already carries that ``source_id``, so checking
+    the inbox twice never duplicates a case. The store is the only record of
+    what was processed.
+    """
+    seen = {case.source.source_id for case in store.list() if case.source}
+    created: list[QuoteCase] = []
+    for source in sources:
+        if source.source_id in seen:
+            continue
+        created.append(create_case_from_source(store, conn, source, run_intake, **run_options))
+        seen.add(source.source_id)
+    return created
 
 
 # --- the seam ------------------------------------------------------------------

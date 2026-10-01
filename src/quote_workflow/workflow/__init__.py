@@ -5,6 +5,8 @@ Entry points:
 - ``create_case(store, source)``                       a RECEIVED case (intake's starting point)
 - ``submit_request(store, conn, case_id, request)``   THE seam: attach a request; NEEDS_INFO or price
 - ``create_case_from_request(...)``                    create + submit in one call (seeding, tests, evaluation)
+- ``create_case_from_source(store, conn, source, run_intake)`` raw RFQ -> intake -> submit (FAILED if intake fails)
+- ``ingest_sources(store, conn, sources, run_intake)``  one case per RFQ not already in the store (portal "Check inbox")
 - ``price_and_summarize(store, conn, case_id)``       pricing -> reviewer summary -> READY_FOR_REVIEW
 - ``apply_review(store, case_id, decision)``          approve (builds the quotation) / reject / request info
 - ``apply_edit(store, conn, case_id, request, editor)`` reviewer correction -> submit_request -> re-priced
@@ -16,6 +18,8 @@ Entry points:
 from quote_workflow.workflow.pipeline import (
     create_case,
     create_case_from_request,
+    create_case_from_source,
+    ingest_sources,
     new_case_id,
     price_and_summarize,
     rerun,
@@ -33,6 +37,8 @@ __all__ = [
     "run_rework",
     "create_case",
     "create_case_from_request",
+    "create_case_from_source",
+    "ingest_sources",
     "is_terminal",
     "new_case_id",
     "price_and_summarize",

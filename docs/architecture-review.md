@@ -276,9 +276,13 @@ READY_FOR_REVIEW ──rework requested──► REWORK_REQUESTED ──rework r
 
 ### 4.2 Entry points (`workflow/pipeline.py`, `workflow/review.py`)
 ```python
-create_case_from_source(store, source: RfqSource) -> QuoteCase
-    # RECEIVED; assigned_to = default reviewer. Then intake.run_intake(source, conn) -> QuoteRequest
-    # (Jenny's function; stubbed until merged), then submit_request(...)
+create_case_from_source(store, conn, source: RfqSource, run_intake) -> QuoteCase
+    # RECEIVED; assigned_to = default reviewer. Then run_intake(source, conn) -> QuoteRequest
+    # (intake.run_intake - Jenny's; demo_inbox.run_intake is the mock until merged), then
+    # submit_request(...). run_intake raising / returning a non-QuoteRequest -> FAILED.
+ingest_sources(store, conn, sources: list[RfqSource], run_intake) -> list[QuoteCase]
+    # one create_case_from_source per source_id not already on a stored case (portal "Check inbox").
+    # Intake contract (fetch_new_rfqs + run_intake): tests/workflow/test_intake_contract.py
 
 submit_request(store, conn, case_id, request: QuoteRequest) -> QuoteCase
     # THE seam. Used by intake, by seed_cases.py, by evaluation, by any future "provide info" form.

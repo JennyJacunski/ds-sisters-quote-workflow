@@ -1,0 +1,46 @@
+[
+  {
+    "id": "jayanta-hoodies",
+    "sender": "Jayanta Thakur <jayanta.thakur@example.com>",
+    "subject": "Quote request - Alien officer hoodies",
+    "received_at": "2026-09-29T08:14:00+00:00",
+    "body": "Hi team,\n\nPlease send a quote for 15 Alien officer hoodies (Black) XL at our usual contract price.\n\nBill and ship to:\nJayanta Thakur\n77 Mill Street\nMadison, WI 53703\nUS\n\nWe'd like them by October 20.\n\nThanks,\nJayanta Thakur",
+    "request": {
+      "customer_name": "Jayanta Thakur",
+      "billing_address": {"name": "Jayanta Thakur", "line1": "77 Mill Street", "city": "Madison", "region": "WI", "postal_code": "53703", "country": "US"},
+      "shipping_address": {"name": "Jayanta Thakur", "line1": "77 Mill Street", "city": "Madison", "region": "WI", "postal_code": "53703", "country": "US"},
+      "requested_delivery_date": "2026-10-20",
+      "lines": [{"product_name": "Alien officer hoodie (Black) XL", "quantity": 15}]
+    }
+  },
+  {
+    "id": "krishnam-rc-cars",
+    "sender": "Krishnam Allu <krishnam@example.com>",
+    "subject": "RC sedan cars - can you do $17?",
+    "received_at": "2026-09-29T10:02:00+00:00",
+    "body": "Hello,\n\nI'm looking for 10 RC toy sedan cars (Black, 1/50 scale). Another supplier quoted me $17 each - can you match that?\n\nBilling and delivery address:\nKrishnam Allu\n5 Lakeview Drive\nAustin, TX 78701\nUS\n\nNeeded by November 3.\n\nRegards,\nKrishnam",
+    "request": {
+      "customer_name": "Krishnam Allu",
+      "billing_address": {"name": "Krishnam Allu", "line1": "5 Lakeview Drive", "city": "Austin", "region": "TX", "postal_code": "78701", "country": "US"},
+      "shipping_address": {"name": "Krishnam Allu", "line1": "5 Lakeview Drive", "city": "Austin", "region": "TX", "postal_code": "78701", "country": "US"},
+      "requested_delivery_date": "2026-11-03",
+      "notes": "Customer mentions a competing offer at $17.",
+      "lines": [
+        {"product_name": "RC toy sedan car with remote control (Black) 1/50 scale", "quantity": 10, "requested_unit_price": 17.0}
+      ]
+    }
+  },
+  {
+    "id": "wingtip-rc-cars",
+    "sender": "Priya Nair <purchasing@wingtiptoys.example.com>",
+    "subject": "Order enquiry - RC sedans for our stores",
+    "received_at": "2026-09-30T07:45:00+00:00",
+    "body": "Hi,\n\nWingtip HQ purchasing here. We'd like 40 of the RC toy sedan cars (Black, 1/50 scale) at our group price.\n\nInvoice to:\nWingtip Toys (Head Office)\n900 Commerce Street\nTulsa, OK 74103\nUS\n\nWe're still deciding which store these ship to - will confirm.\n\nBest,\nPriya Nair",
+    "request": {
+      "customer_name": "Wingtip HQ",
+      "billing_address": {"name": "Wingtip Toys (Head Office)", "line1": "900 Commerce Street", "city": "Tulsa", "region": "OK", "postal_code": "74103", "country": "US"},
+      "clarification_questions": ["Which store should the 40 RC sedan cars ship to?"],
+      "lines": [{"product_name": "RC toy sedan car with remote control (Black) 1/50 scale", "quantity": 40}]
+    }
+  }
+]
