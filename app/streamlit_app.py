@@ -28,6 +28,7 @@ _load_secrets_into_env()
 
 from resources import MANAGER, check_inbox, reviewers, store  # noqa: E402
 
+from quote_workflow.intake import mailbox_label  # noqa: E402
 from ui import STATUS_LABEL  # noqa: E402
 
 st.set_page_config(page_title="Quote Review Portal", page_icon=":material/request_quote:", layout="wide")
@@ -79,7 +80,7 @@ with st.sidebar:
             st.toast(f"{len(new_cases)} new case(s): {listed}", icon=":material/mark_email_unread:")
         else:
             st.toast("No new RFQs in the mailbox.", icon=":material/inbox:")
-    st.caption("Demo mailbox - intake is mocked until the email integration lands.")
+    st.caption(mailbox_label())
     st.caption(f"{store().count()} cases in store")
 
 navigation.run()
