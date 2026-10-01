@@ -21,6 +21,7 @@ DATA_DIR = REPO_ROOT / "data"
 REFERENCE_DIR = DATA_DIR / "reference"
 SAMPLES_DIR = DATA_DIR / "samples"
 SAMPLE_REQUESTS_PATH = SAMPLES_DIR / "requests.json"
+DEMO_INBOX_PATH = SAMPLES_DIR / "demo_inbox.json"  # mock mailbox until intake lands
 DB_DIR = DATA_DIR / "db"
 CATALOG_DB_PATH = DB_DIR / "catalog.db"  # reference data, rebuilt from CSVs
 CASES_DB_PATH = DB_DIR / "cases.db"  # persisted QuoteCases, never rebuilt by build_db
