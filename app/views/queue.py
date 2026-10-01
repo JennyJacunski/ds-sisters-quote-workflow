@@ -129,6 +129,10 @@ def render_queue(store: CaseStore, view: str, viewer: str) -> str | None:
         st.info("No case matches these filters.")
         return None
 
+    # Newest case first, by creation - not by last update. Approving or editing
+    # updates a case; sorting on that would move it, and the table's selection
+    # (a row position) would then point at a different case.
+    cases = sorted(cases, key=lambda case: (case.created_at, case.case_id), reverse=True)
     frame = pd.DataFrame([_row(case) for case in cases])
     event = st.dataframe(
         frame,
@@ -138,7 +142,12 @@ def render_queue(store: CaseStore, view: str, viewer: str) -> str | None:
         selection_mode="single-row",
         key=f"queue-{view}",
     )
-    rows = event.selection.rows if event and event.selection else []
-    if rows:
+    # Only a click changes the open case. The table re-reports the same row on
+    # every rerun (e.g. after Approve); if that row now holds another case,
+    # following it would jump the reviewer away from the case they acted on.
+    rows = tuple(event.selection.rows) if event and event.selection else ()
+    clicked = rows != st.session_state.get(f"queue-rows-{view}")
+    st.session_state[f"queue-rows-{view}"] = rows
+    if rows and clicked:
         return cases[rows[0]].case_id
     return cases[0].case_id if len(cases) == 1 else None

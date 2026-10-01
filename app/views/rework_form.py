@@ -1,13 +1,17 @@
 """The "Send back" dialog: return a case to one of our stages, or ask the customer.
 
-One button in the action bar, three destinations, because the reviewer's
+One button in the action bar, two destinations, because the reviewer's
 complaint decides who has to act:
 
 - the summary reads badly        -> explain rework, our own stage
-- the price needs recomputing    -> pricing rework, our own stage
 - the customer has to answer     -> REQUEST_INFO, which is not rework at all
 
-Presentation only: the first two call ``workflow.request_rework``, the third
+Pricing rework is not offered: the same request under the same policy prices
+the same, and a changed request is re-priced by Edit. The workflow still
+supports ``ReworkTarget.PRICING`` (e.g. after a policy change); the portal just
+doesn't offer it.
+
+Presentation only: the first calls ``workflow.request_rework``, the second
 ``workflow.apply_review``. Neither sets a status here.
 """
 
@@ -28,12 +32,10 @@ OPEN_REVISE_CASE = "revise_dialog_case_id"
 _ASK_CUSTOMER = "Ask the customer for more information"
 _CHOICES = {
     "Reword the reviewer summary": ReworkTarget.EXPLAIN,
-    "Recompute the pricing": ReworkTarget.PRICING,
     _ASK_CUSTOMER: None,
 }
 _HELP = {
     ReworkTarget.EXPLAIN: "Regenerates the AI summary with your reason as context. No price changes.",
-    ReworkTarget.PRICING: "Re-runs the deterministic pricing engine, picking up any policy change.",
     None: "Moves the case to Needs Info. Nothing is re-run until the information arrives.",
 }
 

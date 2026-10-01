@@ -13,12 +13,14 @@ import sqlite3
 
 import streamlit as st
 
+from quote_workflow import demo_inbox as inbox  # the mock; swap for `intake as inbox` when it lands
 from quote_workflow.catalog.build import ensure_database
 from quote_workflow.catalog.connection import get_connection
 from quote_workflow.config import default_reviewer
+from quote_workflow.contracts.case import QuoteCase
 from quote_workflow.samples import load_samples, sample_request
 from quote_workflow.storage.sqlite_store import SqliteCaseStore
-from quote_workflow.workflow import create_case_from_request
+from quote_workflow.workflow import create_case_from_request, ingest_sources
 
 MANAGER = "Manager (all cases)"
 
@@ -40,6 +42,15 @@ def store() -> SqliteCaseStore:
                 case_store, conn, sample_request(sample, conn), case_id=f"Q-{sample['id']}", use_llm=False
             )
     return case_store
+
+
+def check_inbox() -> list[QuoteCase]:
+    """Read the RFQ mailbox and turn every new email into a case (the sidebar button).
+
+    Runs in the request, like every other portal action: a few emails, a spinner,
+    done. Which emails are new is decided by ``ingest_sources`` from the store.
+    """
+    return ingest_sources(store(), catalog(), inbox.fetch_new_rfqs(), inbox.run_intake, use_llm=use_llm())
 
 
 def viewer() -> str:
