@@ -14,7 +14,7 @@ from __future__ import annotations
 try:
     from dotenv import load_dotenv
 
-    load_dotenv()
+    load_dotenv(override=True)  # .env wins over a stale shell OPENAI_API_KEY
 except ImportError:
     pass
 
