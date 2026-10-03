@@ -10,8 +10,11 @@ from __future__ import annotations
 
 import hmac
 import os
+from pathlib import Path
 
 import streamlit as st
+
+ASSETS_DIR = Path(__file__).parent / "assets"
 
 
 def _load_secrets_into_env() -> None:
@@ -31,7 +34,8 @@ from resources import MANAGER, check_inbox, reviewers, store  # noqa: E402
 from quote_workflow.intake import mailbox_label  # noqa: E402
 from ui import STATUS_LABEL  # noqa: E402
 
-st.set_page_config(page_title="Quote Review Portal", page_icon=":material/request_quote:", layout="wide")
+st.set_page_config(page_title="Quote Review Portal", page_icon=ASSETS_DIR / "quotewise-icon.png", layout="wide")
+st.logo(ASSETS_DIR / "quotewise-logo.png", size="large", icon_image=ASSETS_DIR / "quotewise-icon.png")
 
 
 def _require_access_code() -> None:
